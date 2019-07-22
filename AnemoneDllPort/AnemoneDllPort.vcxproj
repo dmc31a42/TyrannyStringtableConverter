@@ -100,6 +100,9 @@
       <ModuleDefinitionFile>Source.def</ModuleDefinitionFile>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y $(OutDir)* $(SolutionDir)TyrannyStringtableConverter\bin\$(ConfigurationName)\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -140,6 +143,9 @@
       <ModuleDefinitionFile>Source.def</ModuleDefinitionFile>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y $(OutDir)* $(SolutionDir)TyrannyStringtableConverter\bin\$(ConfigurationName)\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

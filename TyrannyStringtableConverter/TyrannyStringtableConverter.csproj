@@ -150,7 +150,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /Y $(SolutionDir)$(ConfigurationName)\AnemoneDllPort.dll $(TargetDir)
-xcopy /Y $(SolutionDir)$(ConfigurationName)\anemone.ini $(TargetDir)</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

@@ -25,6 +25,14 @@ namespace TyrannyStringtableConverter
     {
         [DllImport("AnemoneDllPort.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern int fnWin32Project2(int value);
+        [DllImport("AnemoneDllPort.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr Anemone_TranslateText([MarshalAs(UnmanagedType.LPWStr)] string input);
+
+        static string TranslateText(string input)
+        {
+            IntPtr intPtr = Anemone_TranslateText(input);
+            return Marshal.PtrToStringUni(intPtr);
+        }
 
         private Converter converter;
 
@@ -36,6 +44,11 @@ namespace TyrannyStringtableConverter
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             fnWin32Project2(0);
+
+            string test1 = TranslateText("\"どうする、フェイトバインダー？\"");
+            string test2 = TranslateText("\"お前が成し遂げた事は決して小さいことではない。ティアーズの全ての民がこの反乱を噂している…当然、隠れてだが。[url=glossary:カイロス]カイロス[/url]はまだ脅威には違いない、だが初めて我らは、自らが立ち上がる姿が現実に見えてきたのだ。\"");
+            string test3 = TranslateText("\"包囲戦を遅らせた些細な口喧嘩が、立派な内戦に発展してしまいましたね。[url=glossary:ボイス・オブ・ネラット]ボイス・オブ・ネラット[/url]がこの件を議論したがっていることでしょう。\"\n\n\"今、彼はカタフォニーの拠点へと撤退しています。待たせてあげないでくださいね。\" ");
+
             var dialog = new CommonOpenFileDialog
             {
                 EnsurePathExists = true,
