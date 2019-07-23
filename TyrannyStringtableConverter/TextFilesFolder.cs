@@ -50,6 +50,20 @@ namespace TyrannyStringtableConverter
             }
         }
 
+        public void Save(string targetDirPath, string translatedISOAlpha2)
+        {
+            foreach (TextFile textFile in textFiles.Values)
+            {
+                string relativePath = textFile.RelativePath;
+                string changedRelativePath = relativePath.Replace(Path.DirectorySeparatorChar + ISOAlpha2 + Path.DirectorySeparatorChar
+                    , Path.DirectorySeparatorChar + translatedISOAlpha2 + Path.DirectorySeparatorChar);
+                string changedFullPath = Path.Combine(targetDirPath, changedRelativePath);
+                string FolderPath = Path.GetDirectoryName(changedFullPath);
+                Directory.CreateDirectory(FolderPath);
+                textFile.Save(changedFullPath);
+            }
+        }
+
         public string this[int key]
         {
             get

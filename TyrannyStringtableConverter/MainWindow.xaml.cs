@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,6 +33,17 @@ namespace TyrannyStringtableConverter
             InitializeComponent();
         }
 
+        private void StartWorkUI(string content)
+        {
+            gProgress.Visibility = Visibility.Visible;
+            tbProgress.Text = content;
+        }
+
+        private void StopWorkUI()
+        {
+            gProgress.Visibility = Visibility.Hidden;
+            tbProgress.Text = "작업이 진행중입니다.";
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new CommonOpenFileDialog
@@ -116,19 +128,19 @@ namespace TyrannyStringtableConverter
                     if(input != tyrannyPath)
                     {
                         tbTyrannyPath.Text = tyrannyPath;
-                        cbISOAlpha2.ItemsSource = Converter.GetAvailableLanguageISOAlpha2(tyrannyPath);
-                        if (cbISOAlpha2.Items.IndexOf("jp") != -1)
-                        {
-                            cbISOAlpha2.SelectedItem = "jp";
-                        }
-                        else if (cbISOAlpha2.Items.IndexOf("en") != -1)
-                        {
-                            cbISOAlpha2.SelectedItem = "en";
-                        }
-                        else
-                        {
-                            cbISOAlpha2.SelectedIndex = 0;
-                        }
+                    }
+                    cbISOAlpha2.ItemsSource = Converter.GetAvailableLanguageISOAlpha2(tyrannyPath);
+                    if (cbISOAlpha2.Items.IndexOf("jp") != -1)
+                    {
+                        cbISOAlpha2.SelectedItem = "jp";
+                    }
+                    else if (cbISOAlpha2.Items.IndexOf("en") != -1)
+                    {
+                        cbISOAlpha2.SelectedItem = "en";
+                    }
+                    else
+                    {
+                        cbISOAlpha2.SelectedIndex = 0;
                     }
                 }
             }
@@ -145,7 +157,17 @@ namespace TyrannyStringtableConverter
                 {
                     converter = new Converter();
                 }
-                converter.ReadFolder(tyrannyFolderPath, extension, ISOAlpha2);
+                StartWorkUI("폴더에서 문장을 읽어오고 있습니다.");
+                Thread thread = new Thread(new ThreadStart(
+                    delegate ()
+                    {
+                        converter.ReadFolder(tyrannyFolderPath, extension, ISOAlpha2);
+                        this.Dispatcher.Invoke(new Action(delegate ()
+                        {
+                            StopWorkUI();
+                        }));
+                    }));
+                thread.Start();
             }
         }
 
@@ -154,7 +176,15 @@ namespace TyrannyStringtableConverter
             if(converter != null)
             {
                 if (tbPoSavePath.Text != "")
+                {
+                    StartWorkUI("번역을 하고 이를 Po 파일에 저장하고 있습니다. (주의: 매우 오래 걸리는 작업)");
                     converter.SavePo(tbPoSavePath.Text);
+                    StopWorkUI();
+                }
+                else
+                {
+                    MessageBox.Show("저장할 Po 파일의 이름을 지정하여 주십시오.");
+                }
             } else
             {
                 MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
@@ -167,11 +197,57 @@ namespace TyrannyStringtableConverter
             {
                 if(tbPoLoadPath.Text != "")
                 {
+                    StartWorkUI("Po 파일을 불러와서 Tyranny 폴더에서 가져온 원문에 반영하고 있습니다.");
                     converter.LoadPo(tbPoLoadPath.Text);
-                } else
+                    StopWorkUI();
+                }  else
                 {
-                    MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
+                    MessageBox.Show("불러올 Po 파일의 이름을 지정하여 주십시오.");
                 }
+            } else
+            {
+                MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
+            }
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            if (converter != null)
+            {
+                if (tbTranslatedISOAlpha2.Text == "" || tbTranslatedISOAlpha2.Text.Length != 2)
+                {
+                    MessageBox.Show("번역하는 언어의 ISO Alpha-2 코드를 2자리로 입력하여주십시오.");
+                    return;
+                }
+                if(tbTargetDirPath.Text == "")
+                {
+                    MessageBox.Show("번역물이 저장될 폴더를 먼저 선택하세요.");
+                }
+                StartWorkUI("게임 폴더에 적용할 수 있는 번역된 결과물을 만들고 있습니다.");
+                converter.Save(tbTargetDirPath.Text, tbTranslatedISOAlpha2.Text);
+                StopWorkUI();
+            } else
+            {
+                MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
+            }
+            
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                EnsurePathExists = true,
+                EnsureFileExists = false,
+                AllowNonFileSystemItems = false,
+                IsFolderPicker = true,
+                Title = "번역물이 저장될 폴더를 선택하세요. 원문이 저장된 폴더가 아닌 폴더를 추천합니다."
+            };
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                string dirToProcess = Directory.Exists(dialog.FileName) ? dialog.FileName : System.IO.Path.GetDirectoryName(dialog.FileName);
+                tbTargetDirPath.Text = dirToProcess;
             }
         }
     }

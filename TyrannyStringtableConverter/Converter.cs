@@ -59,7 +59,11 @@ namespace TyrannyStringtableConverter
 
         public void SavePo(string poFilePath)
         {
-            var catalog = new POCatalog
+            var catalogPot = new POCatalog
+            {
+                Encoding = "UTF-8"
+            };
+            var catalogPo = new POCatalog
             {
                 Encoding = "UTF-8"
             };
@@ -67,20 +71,34 @@ namespace TyrannyStringtableConverter
             foreach (KeyValuePair<string, string> keyValuePair in textFilesFolder)
             {
                 var key = new POKey(keyValuePair.Value, null, keyValuePair.Key);
-                var entry = new POSingularEntry(key)
+                var entryPot = new POSingularEntry(key)
+                {
+                    Translation = ""
+                };
+                var entryPo = new POSingularEntry(key)
                 {
                     Translation = TranslateText(keyValuePair.Value)
                 };
-                catalog.Add(entry);
+                catalogPot.Add(entryPot);
+                catalogPo.Add(entryPo);
             }
 
-            var generator = new POGenerator(new POGeneratorSettings {
+            var generatorPot = new POGenerator(new POGeneratorSettings
+            {
+                IgnoreEncoding = true
+            });
+            var generatorPo = new POGenerator(new POGeneratorSettings {
                 IgnoreEncoding = true
             });
             StringWriter streamWriter = new StringWriter();
-            generator.Generate(streamWriter, catalog);
-
+            generatorPo.Generate(streamWriter, catalogPo);
             File.WriteAllText(poFilePath, streamWriter.ToString());
+
+            string potPath = Path.ChangeExtension(poFilePath, "pot");
+            StringWriter streamWriterPot = new StringWriter();
+            generatorPot.Generate(streamWriterPot, catalogPot);
+            DirectoryInfo directoryInfo = new DirectoryInfo(poFilePath);
+            File.WriteAllText(potPath, streamWriterPot.ToString(), Encoding.UTF8);
         }
 
         public void LoadPo(string poFilePath)
@@ -94,11 +112,26 @@ namespace TyrannyStringtableConverter
                 if (result.Success)
                 {
                     var catalog = result.Catalog;
+                    foreach(KeyValuePair<string, string> keyValuePair in textFilesFolder.ToArray())
+                    {
+                        /// ONLY TEMPERARY CODE
+                        string msgId = keyValuePair.Value.Replace("\n", "\r\n");
+                        string translated = catalog.GetTranslation(new POKey(msgId, null, keyValuePair.Key));
+                        if (string.IsNullOrEmpty(translated) == false)
+                        {
+                            textFilesFolder[keyValuePair.Key] = translated;
+                        }
+                    }
                 } else
                 {
                     var diagnostics = result.Diagnostics;
                 }
             }
+        }
+
+        public void Save(string targetDirPath, string translatedISOAlpha2)
+        {
+            textFilesFolder.Save(targetDirPath, translatedISOAlpha2);
         }
     }
 }

@@ -51,6 +51,19 @@ namespace TyrannyStringtableConverter
             }
         }
 
+        public bool Save(string path)
+        {
+            try
+            {
+                this.rootDocument.Save(path);
+                    return true;
+            }
+            catch (XmlException)
+            {
+                return false;
+            }
+        }
+
         public Dictionary<string, XmlElement>.KeyCollection Keys
         {
             get => this.keyValuePairs.Keys;
