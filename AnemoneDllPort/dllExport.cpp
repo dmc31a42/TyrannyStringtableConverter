@@ -9,7 +9,7 @@ __declspec(dllexport) int fnWin32Project2(int value) {
 	return value;
 }
 
-__declspec(dllexport) wchar_t* Anemone_TranslateText(wchar_t* inputChar) {
+__declspec(dllexport) const wchar_t* Anemone_TranslateText(wchar_t* inputChar) {
 	std::wstring::size_type nprev = 0;
 	std::wstring::size_type npos = -1;
 	std::wstring input = inputChar;
@@ -224,11 +224,10 @@ __declspec(dllexport) wchar_t* Anemone_TranslateText(wchar_t* inputChar) {
 		outputstream << *iter_trans;
 	}
 	std::wstring outputString = outputstream.str();
-	wchar_t* outputChar = new wchar_t[outputString.size()];
-	/*wcscpy_s(outputChar, outputString.size()-1, outputString.c_str());
-	outputChar[outputString.size() - 1] = L'\0';*/
+	/*wchar_t* outputChar = new wchar_t[outputString.size()];
 	outputString.copy(outputChar, outputString.size());
 	outputChar[outputString.size()] = L'\0';
-	return outputChar;
+	return outputChar;*/
+	return outputString.c_str();
 
 }

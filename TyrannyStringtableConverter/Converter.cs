@@ -12,11 +12,23 @@ namespace TyrannyStringtableConverter
 
     public class Converter
     {
-        //[DllImport("AnemoneDllPort.dll")]
-        //static extern int fnWin32Project2(int value);
+        [DllImport("AnemoneDllPort.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern int fnWin32Project2(int value);
+        [DllImport("AnemoneDllPort.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr Anemone_TranslateText([MarshalAs(UnmanagedType.LPWStr)] string input);
 
+        static string TranslateText(string input)
+        {
+            IntPtr intPtr = Anemone_TranslateText(input);
+            return Marshal.PtrToStringUni(intPtr);
+        }
 
         private TextFilesFolder textFilesFolder;
+
+        public Converter()
+        {
+            fnWin32Project2(0);
+        }
         public void ReadFolder(string dirPath, string extension, string ISOAlpha2)
         {
             textFilesFolder = new TextFilesFolder(dirPath, extension, ISOAlpha2);
@@ -24,12 +36,12 @@ namespace TyrannyStringtableConverter
 
         public static string[] GetAvailableLanguageISOAlpha2(string dirPath)
         {
-            string[] sampleISOAlpha2s = { "en", "EN", "de", "DE" };
+            string[] sampleISOAlpha2s = { "en", "EN", "de", "DE" , "jp", "JP"};
             string foundDirectory = "";
             foreach(string ISOAlpha2 in sampleISOAlpha2s)
             {
                 var found = Directory.GetDirectories(dirPath, ISOAlpha2, SearchOption.AllDirectories);
-                if(found.Length != -1)
+                if(found.Length != 0)
                 {
                     foundDirectory = found[0];
                     break;
@@ -57,7 +69,7 @@ namespace TyrannyStringtableConverter
                 var key = new POKey(keyValuePair.Value, null, keyValuePair.Key);
                 var entry = new POSingularEntry(key)
                 {
-                    Translation = ""
+                    Translation = TranslateText(keyValuePair.Value)
                 };
                 catalog.Add(entry);
             }

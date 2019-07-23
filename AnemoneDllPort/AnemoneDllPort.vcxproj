@@ -23,7 +23,7 @@
     <ProjectGuid>{0CAE8D98-FB65-4716-9BDD-A9893FEB5C20}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>AnemoneDllPort</RootNamespace>
-    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

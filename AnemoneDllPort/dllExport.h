@@ -3,5 +3,5 @@
 extern "C"
 {
 	__declspec(dllexport) int fnWin32Project2(int value);
-	__declspec(dllexport) wchar_t* Anemone_TranslateText(wchar_t* inputChar);
+	__declspec(dllexport) const wchar_t* Anemone_TranslateText(wchar_t* inputChar);
 }

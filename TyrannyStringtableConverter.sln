@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TyrannyStringtableConverter", "TyrannyStringtableConverter\TyrannyStringtableConverter.csproj", "{A306C772-83D5-40AF-90FC-DF8AD83A663B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0CAE8D98-FB65-4716-9BDD-A9893FEB5C20} = {0CAE8D98-FB65-4716-9BDD-A9893FEB5C20}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO", "..\po\source\Karambolo.PO\Karambolo.PO.csproj", "{8C2438CE-09AD-43C1-835F-BA70533A8EAB}"
 EndProject
