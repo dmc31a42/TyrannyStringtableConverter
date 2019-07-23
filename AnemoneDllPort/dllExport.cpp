@@ -224,7 +224,8 @@ __declspec(dllexport) const wchar_t* Anemone_TranslateText(wchar_t* inputChar) {
 		outputstream << *iter_trans;
 	}
 	std::wstring outputString = outputstream.str();
-	wchar_t* outputChar = new wchar_t[outputString.size()];
+	wchar_t* outputChar = new wchar_t[outputString.size() + 1];
+	//wchar_t* outputChar = static_cast<wchar_t*>(::CoTaskMemAlloc(outputString.size() * sizeof(wchar_t) + sizeof(wchar_t)));
 	outputString.copy(outputChar, outputString.size());
 	outputChar[outputString.size()] = L'\0';
 	return outputChar;

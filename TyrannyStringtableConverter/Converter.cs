@@ -15,12 +15,12 @@ namespace TyrannyStringtableConverter
         [DllImport("AnemoneDllPort.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern int fnWin32Project2(int value);
         [DllImport("AnemoneDllPort.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr Anemone_TranslateText([MarshalAs(UnmanagedType.LPWStr)] string input);
+        [return:MarshalAs(UnmanagedType.LPWStr)]
+        static extern string Anemone_TranslateText([MarshalAs(UnmanagedType.LPWStr)] string input);
 
         static string TranslateText(string input)
         {
-            IntPtr intPtr = Anemone_TranslateText(input);
-            return Marshal.PtrToStringUni(intPtr);
+            return Anemone_TranslateText(input);
         }
 
         private TextFilesFolder textFilesFolder;
