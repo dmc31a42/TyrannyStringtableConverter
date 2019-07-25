@@ -87,6 +87,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AnemonePort.cs" />
+    <Compile Include="MyEntry.cs" />
     <Compile Include="TextFile.cs" />
     <Compile Include="TextFilesFolder.cs" />
     <Page Include="MainWindow.xaml">

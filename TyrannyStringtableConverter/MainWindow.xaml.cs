@@ -65,7 +65,7 @@ namespace TyrannyStringtableConverter
                 } else
                 {
                     tbTyrannyPath.Text = tyrannyPath;
-                    cbISOAlpha2.ItemsSource = Converter.GetAvailableLanguageISOAlpha2(tyrannyPath);
+                    cbISOAlpha2.ItemsSource = Converter.GetAvailableLanguageISOAlpha2InDataFolder(tyrannyPath);
                     if (cbISOAlpha2.Items.IndexOf("jp") != -1)
                     {
                         cbISOAlpha2.SelectedItem = "jp";
@@ -129,7 +129,7 @@ namespace TyrannyStringtableConverter
                     {
                         tbTyrannyPath.Text = tyrannyPath;
                     }
-                    cbISOAlpha2.ItemsSource = Converter.GetAvailableLanguageISOAlpha2(tyrannyPath);
+                    cbISOAlpha2.ItemsSource = Converter.GetAvailableLanguageISOAlpha2InDataFolder(tyrannyPath);
                     if (cbISOAlpha2.Items.IndexOf("jp") != -1)
                     {
                         cbISOAlpha2.SelectedItem = "jp";
