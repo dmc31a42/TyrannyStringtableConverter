@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ namespace TyrannyStringtableConverter
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+
 
         private Converter converter;
 
@@ -32,12 +33,16 @@ namespace TyrannyStringtableConverter
         {
             InitializeComponent();
             converter = new Converter();
-            dgMyPo.DataContext = converter.myPo;
         }
 
         private void StartWorkUI(string content)
         {
             gProgress.Visibility = Visibility.Visible;
+            tbProgress.Text = content;
+        }
+
+        private void OtherWorkUI(string content)
+        {
             tbProgress.Text = content;
         }
 
@@ -47,29 +52,50 @@ namespace TyrannyStringtableConverter
             tbProgress.Text = "작업이 진행중입니다.";
         }
 
+        private bool IsMyPoEmpty()
+        {
+            if(converter.myPo.Entries.Count == 0)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
         private void RefreshDataGridMyPo()
         {
-            //if(dgMyPo.Columns.FirstOrDefault((x) => (string)x.Header == "Key") == null)
+            Style wrapStyle = new Style(typeof(TextBlock));
+            wrapStyle.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
+            //if (dgMyPo.Columns.FirstOrDefault((x) => (string)x.Header == "Key") == null)
             //{
             //    dgMyPo.Columns.Add(new DataGridTextColumn
             //    {
             //        Header = "Key",
-            //        Binding = new Binding() { Path = new PropertyPath("Key") }
+            //        Binding = new Binding() { Path = new PropertyPath("Key") },
+            //        Width = System.Windows.Controls.DataGridLength.Auto,
+            //        ElementStyle = wrapStyle
             //    });
             //}
-            //var myPo = converter.myPo;
-            //foreach(string ISOAlpha2 in myPo.AvailableISOAlpha2)
-            //{
-            //    if(dgMyPo.Columns.FirstOrDefault(x=>(string)x.Header == ISOAlpha2) == null)
-            //    {
-            //        dgMyPo.Columns.Add(new DataGridTextColumn
-            //        {
-            //            Header = ISOAlpha2,
-            //            Binding = new Binding() { Path = new PropertyPath(ISOAlpha2) }
-            //        });
-            //    }
-            //}
-            dgMyPo.DataContext = converter.myPo.Entries.Values;
+            foreach (string ISOAlpha2 in converter.myPo.AvailableISOAlpha2)
+            {
+                if (dgMyPo.Columns.FirstOrDefault(x => (string)x.Header == ISOAlpha2) == null)
+                {
+                    dgMyPo.Columns.Add(new DataGridTextColumn
+                    {
+                        Header = ISOAlpha2,
+                        Binding = new Binding()
+                        {
+                            Path = new PropertyPath(ISOAlpha2),
+                            Mode = BindingMode.TwoWay
+                        },
+                        Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                        ElementStyle = wrapStyle,
+                        IsReadOnly = true
+                    });
+                }
+            }
+            dgMyPo.ItemsSource = converter.myPo.Entries.Values;
             dgMyPo.UpdateLayout();
         }
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -87,7 +113,7 @@ namespace TyrannyStringtableConverter
             {
                 string dirToProcess = Directory.Exists(dialog.FileName) ? dialog.FileName : System.IO.Path.GetDirectoryName(dialog.FileName);
                 string tyrannyPath;
-                if((tyrannyPath = CheckTyrannyPath(dirToProcess)) == null)
+                if ((tyrannyPath = CheckTyrannyPath(dirToProcess)) == null)
                 {
                     tbTyrannyPath.Text = "";
                 } else
@@ -126,7 +152,7 @@ namespace TyrannyStringtableConverter
             {
                 string samplePath = filesFound[0];
                 var foundIndex = samplePath.IndexOf(@"\data\");
-                if(foundIndex >= 0)
+                if (foundIndex >= 0)
                 {
                     string dirPath = samplePath.Substring(0, foundIndex);
                     return dirPath;
@@ -134,14 +160,14 @@ namespace TyrannyStringtableConverter
                 {
                     return null;
                 }
-                
+
             }
         }
 
         private void TbTyrannyPath_TextChanged(object sender, TextChangedEventArgs e)
         {
             var input = tbTyrannyPath.Text;
-            if(input == "" || input == null)
+            if (input == "" || input == null)
             {
 
             } else
@@ -153,7 +179,7 @@ namespace TyrannyStringtableConverter
                 }
                 else
                 {
-                    if(input != tyrannyPath)
+                    if (input != tyrannyPath)
                     {
                         tbTyrannyPath.Text = tyrannyPath;
                     }
@@ -174,12 +200,21 @@ namespace TyrannyStringtableConverter
             }
         }
 
+        private void UpdateAvailableLanguageISOAlpha2()
+        {
+            cbTranslatedISOAlpha2.ItemsSource = converter.AvailableISOAlpha2;
+            cbPOSaveOriginalISOAlpha2.ItemsSource = converter.AvailableISOAlpha2;
+            cbPOSaveTranslatedISOAlpha2.ItemsSource = converter.AvailableISOAlpha2;
+            cbPOLoadTranslatedISOAlpha2.ItemsSource = converter.AvailableISOAlpha2;
+            cbAnamoneOriginalISOAlpha2.ItemsSource = converter.AvailableISOAlpha2;
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             string tyrannyFolderPath = tbTyrannyPath.Text;
             string extension = tbFileExt.Text;
             string ISOAlpha2 = cbISOAlpha2.SelectedItem.ToString();
-            if(tyrannyFolderPath != "" && extension != "" && ISOAlpha2 != "")
+            if (tyrannyFolderPath != "" && extension != "" && ISOAlpha2 != "")
             {
                 StartWorkUI("폴더에서 문장을 읽어오고 있습니다.");
                 Thread thread = new Thread(new ThreadStart(
@@ -188,6 +223,35 @@ namespace TyrannyStringtableConverter
                         converter.ReadFolder(tyrannyFolderPath, extension, ISOAlpha2);
                         this.Dispatcher.Invoke(new Action(delegate ()
                         {
+                            UpdateAvailableLanguageISOAlpha2();
+                            OtherWorkUI("문장 목록을 갱신하고 있습니다.");
+                            RefreshDataGridMyPo();
+                            StopWorkUI();
+                        }));
+                    }));
+                thread.Start();
+            }
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            string tyrannyFolderPath = tbTyrannyPath.Text;
+            string extension = tbFileExt.Text;
+            if (tyrannyFolderPath != "" && extension != "")
+            {
+                StartWorkUI("폴더에서 문장을 읽어오고 있습니다.");
+                Thread thread = new Thread(new ThreadStart(
+                    delegate ()
+                    {
+                        foreach (string ISOAlpha2 in cbISOAlpha2.ItemsSource)
+                        {
+                            converter.ReadFolder(tyrannyFolderPath, extension, ISOAlpha2);
+                        }
+                        this.Dispatcher.Invoke(new Action(delegate ()
+                        {
+                            UpdateAvailableLanguageISOAlpha2();
+                            OtherWorkUI("문장 목록을 갱신하고 있습니다.");
+                            RefreshDataGridMyPo();
                             StopWorkUI();
                         }));
                     }));
@@ -197,65 +261,109 @@ namespace TyrannyStringtableConverter
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            if(converter != null)
+            if(IsMyPoEmpty())
             {
-                if (tbPoSavePath.Text != "")
-                {
-                    StartWorkUI("번역을 하고 이를 Po 파일에 저장하고 있습니다. (주의: 매우 오래 걸리는 작업)");
-                    throw new NotImplementedException();
-                    converter.SavePo(tbPoSavePath.Text, "jp", "jp");
-                    StopWorkUI();
-                }
-                else
-                {
-                    MessageBox.Show("저장할 Po 파일의 이름을 지정하여 주십시오.");
-                }
-            } else
-            {
-                MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
+                MessageBox.Show("Tyranny 폴더나 Po 파일에서 문장을 불러오십시오");
+                return;
             }
+            if (string.IsNullOrEmpty(tbPoSavePath.Text))
+            {
+                MessageBox.Show("저장할 Po 파일의 이름을 지정하여 주십시오.");
+                return;
+            }
+            if (cbPOSaveOriginalISOAlpha2.SelectedItem == null)
+            {
+                MessageBox.Show("Po 파일에 저장할 원문의 언어를 선택하십시오.");
+                return;
+            }
+            if (cbPOSaveTranslatedISOAlpha2.SelectedItem == null
+                || cbPOSaveTranslatedISOAlpha2.SelectedItem.ToString().Length != 2)
+            {
+                MessageBox.Show("Po 파일에 저장할 번역문의 언어를 선택하거나 2자리로 정확히 입력하여주십시오.");
+                return;
+            }
+            StartWorkUI("선택한 원문과 번역문을 Po 파일에 저장하고 있습니다. (주의: 오래 걸리는 작업)");
+            string poSavePath = tbPoSavePath.Text;
+            string poSaveOriginalISOAlpha2 = cbPOSaveOriginalISOAlpha2.SelectedItem.ToString();
+            string poSaveTranslatedISOAlpha2 = cbPOSaveTranslatedISOAlpha2.SelectedItem.ToString();
+            Thread thread = new Thread(new ThreadStart(
+                delegate ()
+                {
+                    converter.SavePo(poSavePath, poSaveOriginalISOAlpha2, poSaveTranslatedISOAlpha2);
+                    this.Dispatcher.Invoke(new Action(delegate ()
+                    {
+                        StopWorkUI();
+                    }));
+                }));
+            thread.Start();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            if(converter != null)
+            if (string.IsNullOrEmpty(tbPoLoadPath.Text))
             {
-                if(tbPoLoadPath.Text != "")
-                {
-                    StartWorkUI("Po 파일을 불러와서 Tyranny 폴더에서 가져온 원문에 반영하고 있습니다.");
-                    converter.LoadPo(tbPoLoadPath.Text, "jp", "jp");
-                    StopWorkUI();
-                }  else
-                {
-                    MessageBox.Show("불러올 Po 파일의 이름을 지정하여 주십시오.");
-                }
-            } else
-            {
-                MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
+                MessageBox.Show("불러올 Po 파일의 이름을 지정하여 주십시오.");
+                return;
             }
+            if(File.Exists(tbPoLoadPath.Text) == false)
+            {
+                MessageBox.Show("선택한 파일이 실제로 존재하지 않습니다.");
+                return;
+            }
+            if (cbPOLoadTranslatedISOAlpha2.SelectedItem == null
+                || cbPOLoadTranslatedISOAlpha2.SelectedItem.ToString().Length != 2)
+            {
+                MessageBox.Show("Po 파일에서 불러올 번역문의 언어를 선택하거나 2자리로 정확히 입력하여주십시오.");
+                return;
+            }
+            StartWorkUI("Po 파일을 불러오고 있습니다.");
+            string poLoadPath = tbPoLoadPath.Text;
+            string poLoadTranslatedISOAlpha2 = cbPOLoadTranslatedISOAlpha2.SelectedItem.ToString();
+            Thread thread = new Thread(new ThreadStart(
+                delegate ()
+                {
+                    converter.LoadPo(poLoadPath, poLoadTranslatedISOAlpha2);
+                    this.Dispatcher.Invoke(new Action(delegate ()
+                    {
+                        UpdateAvailableLanguageISOAlpha2();
+                        OtherWorkUI("문장 목록을 갱신하고 있습니다.");
+                        RefreshDataGridMyPo();
+                        StopWorkUI();
+                    }));
+                }));
+            thread.Start();
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            if (converter != null)
+            if (IsMyPoEmpty())
             {
-                if (cbTranslatedISOAlpha2.SelectedItem.ToString() == "" || cbTranslatedISOAlpha2.SelectedItem.ToString().Length != 2)
-                {
-                    MessageBox.Show("번역하는 언어의 ISO Alpha-2 코드를 2자리로 입력하여주십시오.");
-                    return;
-                }
-                if(tbTargetDirPath.Text == "")
-                {
-                    MessageBox.Show("번역물이 저장될 폴더를 먼저 선택하세요.");
-                }
-                StartWorkUI("게임 폴더에 적용할 수 있는 번역된 결과물을 만들고 있습니다.");
-                converter.SaveFolder(tbTargetDirPath.Text, cbTranslatedISOAlpha2.SelectedItem.ToString());
-                StopWorkUI();
-            } else
-            {
-                MessageBox.Show("Tyranny 폴더를 먼저 지정한 후 폴더를 불러오십시오.");
+                MessageBox.Show("Tyranny 폴더나 Po 파일에서 문장을 불러오십시오");
+                return;
             }
-            
+            if (cbTranslatedISOAlpha2.SelectedItem.ToString() == "" || cbTranslatedISOAlpha2.SelectedItem.ToString().Length != 2)
+            {
+                MessageBox.Show("번역하는 언어의 ISO Alpha-2 코드를 2자리로 입력하여주십시오.");
+                return;
+            }
+            if (tbTargetDirPath.Text == "")
+            {
+                MessageBox.Show("번역물이 저장될 폴더를 먼저 선택하세요.");
+                return;
+            }
+            StartWorkUI("게임 폴더에 적용할 수 있는 번역된 결과물을 만들고 있습니다.");
+            string targetDirPath = tbTargetDirPath.Text;
+            string translatedISOAlpha2 = cbTranslatedISOAlpha2.SelectedItem.ToString();
+            Thread thread = new Thread(new ThreadStart(
+                delegate ()
+                {
+                    converter.SaveFolder(targetDirPath, translatedISOAlpha2);
+                    this.Dispatcher.Invoke(new Action(delegate ()
+                    {
+                        StopWorkUI();
+                    }));
+                }));
+            thread.Start();
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
@@ -282,6 +390,78 @@ namespace TyrannyStringtableConverter
             converter.myPo.AddISOAlpha2("jp");
             converter.myPo.AddISOAlpha2("kr");
             RefreshDataGridMyPo();
+        }
+
+        private void Button_Click_9(object sender, RoutedEventArgs e)
+        {
+            if (IsMyPoEmpty())
+            {
+                MessageBox.Show("Tyranny 폴더나 Po 파일에서 문장을 불러오십시오");
+                return;
+            }
+            if (cbAnamoneOriginalISOAlpha2.SelectedItem == null)
+            {
+                MessageBox.Show("아나모네로 번역할 원문을 선택하십시오.");
+                return;
+            }
+            StartWorkUI("선택한 원문(" + cbAnamoneOriginalISOAlpha2.SelectedItem.ToString() + ")을 한국어(kr)로 번역하고 있습니다.(매우 오래걸리는 작업)");
+            var anamoneOriginalISOAlpha2 = cbAnamoneOriginalISOAlpha2.SelectedItem.ToString();
+            Thread thread = new Thread(new ThreadStart(
+                delegate ()
+                {
+                    converter.TranslateToKR(anamoneOriginalISOAlpha2);
+                    this.Dispatcher.Invoke(new Action(delegate ()
+                    {
+                        UpdateAvailableLanguageISOAlpha2();
+                        OtherWorkUI("문장 목록을 갱신하고 있습니다.");
+                        RefreshDataGridMyPo();
+                        StopWorkUI();
+                    }));
+                }));
+            thread.Start();
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            string defaultFileName = tbPoSavePath.Text;
+            if(string.IsNullOrEmpty(defaultFileName))
+            {
+                defaultFileName = "strings.po";
+            }
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Title = "Po 파일을 저장할 위치를 지정하십시오.",
+                FileName = defaultFileName,
+            };
+            if(saveFileDialog.ShowDialog() == true)
+            {
+                tbPoSavePath.Text = saveFileDialog.FileName;
+            }
+        }
+
+        private void Button_Click_10(object sender, RoutedEventArgs e)
+        {
+            string defaultFileName = tbPoLoadPath.Text;
+            if(string.IsNullOrEmpty(defaultFileName))
+            {
+                defaultFileName = "strings.po";
+            }
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "불러올 Po 파일을 선택하십시오.",
+                FileName = defaultFileName
+            };
+            if(openFileDialog.ShowDialog() == true)
+            {
+                string loadPoFileName = openFileDialog.FileName;
+                if (File.Exists(loadPoFileName))
+                {
+                    tbPoLoadPath.Text = loadPoFileName;
+                } else
+                {
+                    MessageBox.Show("선택한 파일이 실제로 존재하지 않습니다.");
+                }
+            }
         }
     }
 }

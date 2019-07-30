@@ -127,7 +127,7 @@ namespace TyrannyStringtableConverter
             File.WriteAllText(potPath, streamWriterPot.ToString(), Encoding.UTF8);
         }
 
-        public void LoadPo(string poFilePath, string originalISOAlpha2, string targetISOAlpha2)
+        public void LoadPo(string poFilePath, string targetISOAlpha2)
         {
             var parser = new POParser();
 
@@ -138,15 +138,22 @@ namespace TyrannyStringtableConverter
                 if (result.Success)
                 {
                     var catalog = result.Catalog;
-                    foreach(string key in myPo)
+                    //foreach(string key in myPo)
+                    //{
+                    //    /// ONLY TEMPERARY CODE
+                    //    string msgId = myPo[key,originalISOAlpha2];
+                    //    string translated = catalog.GetTranslation(new POKey(msgId, null, key));
+                    //    if (string.IsNullOrEmpty(translated) == false)
+                    //    {
+                    //        myPo[key,targetISOAlpha2] = translated;
+                    //        myPo.AddISOAlpha2(targetISOAlpha2);
+                    //    }
+                    //}
+                    foreach(var poEntry in catalog.Keys)
                     {
-                        /// ONLY TEMPERARY CODE
-                        string msgId = myPo[key,originalISOAlpha2];
-                        string translated = catalog.GetTranslation(new POKey(msgId, null, key));
-                        if (string.IsNullOrEmpty(translated) == false)
+                        if (myPo.ContainsKey(poEntry.ContextId))
                         {
-                            myPo[key,targetISOAlpha2] = translated;
-                            myPo.AddISOAlpha2(targetISOAlpha2);
+                            myPo[poEntry.ContextId, targetISOAlpha2] = catalog.GetTranslation(poEntry);
                         }
                     }
                 } else
@@ -168,6 +175,7 @@ namespace TyrannyStringtableConverter
                     }
                 }
             }
+            textFilesFolder.Save(targetDirPath, translatedISOAlpha2);
         }
     }
 }

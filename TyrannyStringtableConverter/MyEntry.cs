@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,10 @@ namespace TyrannyStringtableConverter
 {
     public class MyPo : IEnumerable
     {
-        public Dictionary<string, MyEntry> Entries { get; } = new Dictionary<string, MyEntry>();
+        public Dictionary<string, MyEntry> Entries { get; private set; } = new Dictionary<string, MyEntry>();
+        private Dictionary<string, MyEntry> backupEntries;
         private readonly HashSet<string> _AvailableISOAlpha2 = new HashSet<string>();
+
         public string[] AvailableISOAlpha2
         {
             get { return _AvailableISOAlpha2.ToArray(); }
@@ -115,9 +118,16 @@ namespace TyrannyStringtableConverter
         }
     }
 
-    public class MyEntry : DynamicObject
+    public class MyEntry : DynamicObject, IEditableObject, INotifyPropertyChanged
     {
-        public Dictionary<string, object> dictionary { get; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Dictionary { get; private set; } = new Dictionary<string, object>();
+        private Dictionary<string, object> backupDictionary;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
         public string Key { get; set; }
         // If you try to get a value of a property 
         // not defined in the class, this method is called.
@@ -131,7 +141,7 @@ namespace TyrannyStringtableConverter
             // If the property name is found in a dictionary,
             // set the result parameter to the property value and return true.
             // Otherwise, return false.
-            return dictionary.TryGetValue(name, out result);
+            return Dictionary.TryGetValue(name, out result);
         }
 
         // If you try to set a value of a property that is
@@ -141,17 +151,36 @@ namespace TyrannyStringtableConverter
         {
             // Converting the property name to lowercase
             // so that property names become case-insensitive.
-            dictionary[binder.Name.ToLower()] = value;
-
+            Dictionary[binder.Name.ToLower()] = value;
+            OnPropertyChanged(binder.Name.ToLower());
             // You can always add a value to a dictionary,
             // so this method always returns true.
             return true;
         }
 
+        public void BeginEdit()
+        {
+            if(backupDictionary == null)
+            {
+                backupDictionary = new Dictionary<string, object>(Dictionary);
+            }
+        }
+
+        public void EndEdit()
+        {
+            backupDictionary = null;
+        }
+
+        public void CancelEdit()
+        {
+            Dictionary = backupDictionary;
+            backupDictionary = null;
+        }
+
         public object this[string ISOAlpha2]
         {
-            get { return dictionary[ISOAlpha2]; }
-            set { dictionary[ISOAlpha2] = value; }
+            get { return Dictionary[ISOAlpha2]; }
+            set { Dictionary[ISOAlpha2] = value; }
         }
     }
 }
