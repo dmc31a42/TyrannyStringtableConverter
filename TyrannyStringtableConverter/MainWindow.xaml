@@ -5,90 +5,224 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TyrannyStringtableConverter"
         mc:Ignorable="d"
-        Title="Tyranny Stringtable localization tool" Height="450" Width="800">
+        Title="Tyranny Stringtable localization tool" Height="768" Width="1024">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <GroupBox Header="Tyranny 언어 파일(폴더) 관련">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="5">
+            <GroupBox Header="Tyranny 언어 파일(폴더)에서 읽기">
                 <StackPanel>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="Tyranny 원본 폴더" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
-                        <TextBox x:Name="tbTyrannyPath" Grid.Row="0" Grid.Column="1" Height="20" Margin="5,0,5,0" TextChanged="TbTyrannyPath_TextChanged"/>
-                        <Button Grid.Row="0" Grid.Column="2" Content="폴더 찾기" Height="20" VerticalAlignment="center" Click="Button_Click" />
-                    </Grid>
-                    <Grid >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="원문 파일 확장자"/>
-                        <TextBox x:Name="tbFileExt" Grid.Column="1" Text="stringtable" Height="20" Margin="5,0,5,0"/>
-                        <Label Grid.Column="2" Content="원문에 사용할 언어"/>
-                        <ComboBox Grid.Column="3" x:Name="cbISOAlpha2"/>
-                    </Grid>
-                    <Grid>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Height="10" Width="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="Tyranny 원본 폴더" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+                            <Button Grid.Row="0" Grid.Column="2" Content="폴더 찾기" Height="20" VerticalAlignment="center" Click="Button_Click" />
+                            <TextBox x:Name="tbTyrannyPath" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="20" TextChanged="TbTyrannyPath_TextChanged" Margin="5,0,0,0" TextWrapping="Wrap"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Height="10" Width="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="원문 파일 확장자"/>
+                            <TextBox x:Name="tbFileExt" Grid.Column="1" Text="stringtable" Height="20"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Height="10" Width="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="원문에 사용할 언어"/>
+                            <ComboBox Grid.Column="2" x:Name="cbISOAlpha2"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <Grid Margin="0,5,5,0">
                         <Button Content="폴더 읽기" Click="Button_Click_1"/>
                     </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Label Grid.Column="0" Content="번역된 파일들이 저장될 폴더"/>
-                        <TextBox Grid.Column="1" x:Name="tbTargetDirPath" Height="20" Margin="5,0,5,0"/>
-                        <Button Grid.Column="2" Content="폴더 지정하기" Height="20" Click="Button_Click_5"/>
+                    <Grid Margin="0,5,5,0">
+                        <Button Content="모든 폴더 읽기" Click="Button_Click_1"/>
                     </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="번역할 언어의 ISO Alpha2"/>
-                        <TextBox Grid.Column="1" x:Name="tbTranslatedISOAlpha2" Text="kr" Height="20" Margin="5,0,5,0"/>
-                        <Button Grid.Column="4" Content="수정된 원문 파일 저장하기" Height="20" Click="Button_Click_4"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Tyranny 언어 파일(폴더) 형식으로 저장">
+                <StackPanel>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Height="10" Width="10" Fill="black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Content="번역된 파일들이 저장될 폴더"/>
+                            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="tbTargetDirPath" Height="20" Margin="5,0,0,0" TextWrapping="Wrap"/>
+                            <Button Grid.Column="2" Content="폴더 지정하기" Height="20" Click="Button_Click_5"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Height="10" Width="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Content="번역할 언어의 ISO Alpha2"/>
+                            <ComboBox Grid.Column="2" x:Name="cbTranslatedISOAlpha2"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <Grid Margin="0,5,5,0">
+                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="수정된 원문 파일 저장하기" Height="20" Click="Button_Click_4"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Po 파일 저장">
+                <StackPanel>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Width="10" Height="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Content="Po 파일 저장 경로"/>
+                            <Button Grid.Column="2" Content="파일 이름 지정하기" Height="20"/>
+                            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="tbPoSavePath" Text="strings.po" Height="20" Margin="5,0,0,0" TextWrapping="Wrap"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse  Width="10" Height="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="원문으로 사용할 언어 지정"/>
+                            <ComboBox Grid.Column="2" x:Name="cbPOSaveOriginalISOAlpha2"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse  Width="10" Height="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="번역문으로 사용할 언어 지정"/>
+                            <ComboBox Grid.Column="2" x:Name="cbPOSaveTranslatedISOAlpha2" IsEditable="True"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <Grid Margin="0,5,5,0">
+                        <Button Grid.Column="2" Content="Po 파일로 저장" Height="20" Click="Button_Click_2"/>
                     </Grid>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Po 파일 관련">
                 <StackPanel>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="Po 파일 저장 경로"/>
-                        <TextBox Grid.Column="1" x:Name="tbPoSavePath" Text="strings.po" Height="20" Margin="5,0,5,0"/>
-                        <Button Grid.Column="2" Content="Po 파일로 저장" Height="20" Click="Button_Click_2"/>
-                    </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Content="Po 파일 불러올 경로"/>
-                        <TextBox Grid.Column="1" x:Name="tbPoLoadPath" Text="strings.po" Height="20" Margin="5,0,5,0"/>
-                        <Button Grid.Column="2" Content="Po 파일에서 불러오고 적용하기" Height="20" Click="Button_Click_3"/>
+                    
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse Width="10" Height="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Content="Po 파일 불러올 경로"/>
+                            <Button Grid.Column="2" Content="파일 지정하기" Height="20"/>
+                            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="tbPoLoadPath" Text="strings.po" Height="20" Margin="3,0,0,0" TextWrapping="Wrap"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <!--BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse  Width="10" Height="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="원문의 ISO Alpha-2 지정"/>
+                            <ComboBox Grid.Column="2" x:Name="cbPOLoadOriginalISOAlpha2"/>
+                        <Grid/>
+                    </BulletDecorator-->
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Ellipse  Width="10" Height="10" Fill="Black"/>
+                        </BulletDecorator.Bullet>
+                        <Grid Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="번역문의 ISO Alpha-2 지정"/>
+                            <ComboBox Grid.Column="2" x:Name="cbPOLoadTranslatedISOAlpha2" IsEditable="True"/>
+                        </Grid>
+                    </BulletDecorator>
+                    <Grid Margin="0,5,5,0">
+                        <Button Grid.Column="2" Content="Po 파일에서 불러오기" Height="20" Click="Button_Click_3"/>
                     </Grid>
                 </StackPanel>
             </GroupBox>
@@ -104,7 +238,16 @@
                     
                 </StackPanel>
             </GroupBox>
+            <Button Content="Refresh DataGrid test" Click="Button_Click_6"/>
         </StackPanel>
+        <DataGrid Grid.Column="1" x:Name="dgMyPo">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}"/>
+                <DataGridTextColumn Header="en" Binding="{Binding Path=en}"/>
+                <DataGridTextColumn Header="jp" Binding="{Binding Path=jp}"/>
+                <DataGridTextColumn Header="kr" Binding="{Binding Path=kr}"/>
+            </DataGrid.Columns>
+        </DataGrid>
         <Grid Background="#4C000000" x:Name="gProgress" Visibility="hidden">
             <Grid Width="300" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FFFFFFFF">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">

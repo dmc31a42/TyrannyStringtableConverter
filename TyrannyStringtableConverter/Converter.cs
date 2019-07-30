@@ -14,25 +14,20 @@ namespace TyrannyStringtableConverter
     {
         [DllImport("AnemoneDllPort.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern int fnWin32Project2(int value);
-        [DllImport("AnemoneDllPort.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("AnemoneDllPort.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl,EntryPoint = "Anemone_TranslateText")]
         [return:MarshalAs(UnmanagedType.LPWStr)]
-        static extern string Anemone_TranslateText([MarshalAs(UnmanagedType.LPWStr)] string input);
-
-        static string TranslateText(string input)
-        {
-            return Anemone_TranslateText(input);
-        }
+        static extern string TranslateText([MarshalAs(UnmanagedType.LPWStr)] string input);
 
         private TextFilesFolder textFilesFolder;
-        private MyPo myPo = new MyPo();
+        public readonly MyPo myPo = new MyPo();
 
         public Converter()
         {
             fnWin32Project2(0);
         }
 
-        public string[] AvailableISOAlpha2 { get { return _AvailableISOAlpha2.ToArray(); } }
-        private readonly HashSet<string> _AvailableISOAlpha2 = new HashSet<string>();
+        public string[] AvailableISOAlpha2 { get { return myPo.AvailableISOAlpha2.ToArray(); } }
+        
 
         public string unityNewLine(string input)
         {
@@ -51,9 +46,9 @@ namespace TyrannyStringtableConverter
             textFilesFolder = new TextFilesFolder(dirPath, extension, ISOAlpha2);
             foreach(KeyValuePair<string,string> keyValuePair in textFilesFolder)
             {
-                myPo[keyValuePair.Key][ISOAlpha2] = unityNewLine(keyValuePair.Value);
+                myPo[keyValuePair.Key,ISOAlpha2] = unityNewLine(keyValuePair.Value);
             }
-            _AvailableISOAlpha2.Add(ISOAlpha2);
+            myPo.AddISOAlpha2(ISOAlpha2);
         }
 
         public static string[] GetAvailableLanguageISOAlpha2InDataFolder(string dirPath)
@@ -83,9 +78,9 @@ namespace TyrannyStringtableConverter
         {
             foreach(string key in myPo.Keys.ToList())
             {
-                myPo[key]["kr"] = unityNewLine(TranslateText(myPo[key][sourceISOAlpha2]));
+                myPo[key,"kr"] = unityNewLine(TranslateText(myPo[key,sourceISOAlpha2]));
             }
-            _AvailableISOAlpha2.Add("kr");
+            myPo.AddISOAlpha2("kr");
         }
 
         public void SavePo(string poFilePath, string originalISOAlpha2, string targetISOAlpha2)
@@ -101,14 +96,14 @@ namespace TyrannyStringtableConverter
 
             foreach (string key in myPo.Keys.ToList())
             {
-                var poKey = new POKey(myPo[key][originalISOAlpha2], null, key);
+                var poKey = new POKey(myPo[key,originalISOAlpha2], null, key);
                 var entryPot = new POSingularEntry(poKey)
                 {
                     Translation = ""
                 };
                 var entryPo = new POSingularEntry(poKey)
                 {
-                    Translation = myPo[key][targetISOAlpha2]
+                    Translation = myPo[key,targetISOAlpha2]
                 };
                 catalogPot.Add(entryPot);
                 catalogPo.Add(entryPo);
@@ -146,12 +141,12 @@ namespace TyrannyStringtableConverter
                     foreach(string key in myPo)
                     {
                         /// ONLY TEMPERARY CODE
-                        string msgId = myPo[key][originalISOAlpha2];
+                        string msgId = myPo[key,originalISOAlpha2];
                         string translated = catalog.GetTranslation(new POKey(msgId, null, key));
                         if (string.IsNullOrEmpty(translated) == false)
                         {
-                            myPo[key][targetISOAlpha2] = translated;
-                            _AvailableISOAlpha2.Add(targetISOAlpha2);
+                            myPo[key,targetISOAlpha2] = translated;
+                            myPo.AddISOAlpha2(targetISOAlpha2);
                         }
                     }
                 } else
@@ -161,15 +156,15 @@ namespace TyrannyStringtableConverter
             }
         }
 
-        public void Save(string targetDirPath, string translatedISOAlpha2)
+        public void SaveFolder(string targetDirPath, string translatedISOAlpha2)
         {
             foreach(string key in textFilesFolder.Keys.ToList())
             {
                 if(myPo.ContainsKey(key))
                 {
-                    if(myPo[key].Text.ContainsKey(translatedISOAlpha2))
+                    if(String.IsNullOrEmpty(myPo[key,translatedISOAlpha2]))
                     {
-                        textFilesFolder[key] = myPo[key][translatedISOAlpha2];
+                        textFilesFolder[key] = myPo[key,translatedISOAlpha2];
                     }
                 }
             }

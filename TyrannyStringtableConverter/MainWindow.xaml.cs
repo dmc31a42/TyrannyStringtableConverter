@@ -31,6 +31,8 @@ namespace TyrannyStringtableConverter
         public MainWindow()
         {
             InitializeComponent();
+            converter = new Converter();
+            dgMyPo.DataContext = converter.myPo;
         }
 
         private void StartWorkUI(string content)
@@ -43,6 +45,32 @@ namespace TyrannyStringtableConverter
         {
             gProgress.Visibility = Visibility.Hidden;
             tbProgress.Text = "작업이 진행중입니다.";
+        }
+
+        private void RefreshDataGridMyPo()
+        {
+            //if(dgMyPo.Columns.FirstOrDefault((x) => (string)x.Header == "Key") == null)
+            //{
+            //    dgMyPo.Columns.Add(new DataGridTextColumn
+            //    {
+            //        Header = "Key",
+            //        Binding = new Binding() { Path = new PropertyPath("Key") }
+            //    });
+            //}
+            //var myPo = converter.myPo;
+            //foreach(string ISOAlpha2 in myPo.AvailableISOAlpha2)
+            //{
+            //    if(dgMyPo.Columns.FirstOrDefault(x=>(string)x.Header == ISOAlpha2) == null)
+            //    {
+            //        dgMyPo.Columns.Add(new DataGridTextColumn
+            //        {
+            //            Header = ISOAlpha2,
+            //            Binding = new Binding() { Path = new PropertyPath(ISOAlpha2) }
+            //        });
+            //    }
+            //}
+            dgMyPo.DataContext = converter.myPo.Entries.Values;
+            dgMyPo.UpdateLayout();
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -153,10 +181,6 @@ namespace TyrannyStringtableConverter
             string ISOAlpha2 = cbISOAlpha2.SelectedItem.ToString();
             if(tyrannyFolderPath != "" && extension != "" && ISOAlpha2 != "")
             {
-                if(converter == null)
-                {
-                    converter = new Converter();
-                }
                 StartWorkUI("폴더에서 문장을 읽어오고 있습니다.");
                 Thread thread = new Thread(new ThreadStart(
                     delegate ()
@@ -178,7 +202,8 @@ namespace TyrannyStringtableConverter
                 if (tbPoSavePath.Text != "")
                 {
                     StartWorkUI("번역을 하고 이를 Po 파일에 저장하고 있습니다. (주의: 매우 오래 걸리는 작업)");
-                    converter.SavePo(tbPoSavePath.Text);
+                    throw new NotImplementedException();
+                    converter.SavePo(tbPoSavePath.Text, "jp", "jp");
                     StopWorkUI();
                 }
                 else
@@ -198,7 +223,7 @@ namespace TyrannyStringtableConverter
                 if(tbPoLoadPath.Text != "")
                 {
                     StartWorkUI("Po 파일을 불러와서 Tyranny 폴더에서 가져온 원문에 반영하고 있습니다.");
-                    converter.LoadPo(tbPoLoadPath.Text);
+                    converter.LoadPo(tbPoLoadPath.Text, "jp", "jp");
                     StopWorkUI();
                 }  else
                 {
@@ -214,7 +239,7 @@ namespace TyrannyStringtableConverter
         {
             if (converter != null)
             {
-                if (tbTranslatedISOAlpha2.Text == "" || tbTranslatedISOAlpha2.Text.Length != 2)
+                if (cbTranslatedISOAlpha2.SelectedItem.ToString() == "" || cbTranslatedISOAlpha2.SelectedItem.ToString().Length != 2)
                 {
                     MessageBox.Show("번역하는 언어의 ISO Alpha-2 코드를 2자리로 입력하여주십시오.");
                     return;
@@ -224,7 +249,7 @@ namespace TyrannyStringtableConverter
                     MessageBox.Show("번역물이 저장될 폴더를 먼저 선택하세요.");
                 }
                 StartWorkUI("게임 폴더에 적용할 수 있는 번역된 결과물을 만들고 있습니다.");
-                converter.Save(tbTargetDirPath.Text, tbTranslatedISOAlpha2.Text);
+                converter.SaveFolder(tbTargetDirPath.Text, cbTranslatedISOAlpha2.SelectedItem.ToString());
                 StopWorkUI();
             } else
             {
@@ -249,6 +274,14 @@ namespace TyrannyStringtableConverter
                 string dirToProcess = Directory.Exists(dialog.FileName) ? dialog.FileName : System.IO.Path.GetDirectoryName(dialog.FileName);
                 tbTargetDirPath.Text = dirToProcess;
             }
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            converter.myPo.AddISOAlpha2("en");
+            converter.myPo.AddISOAlpha2("jp");
+            converter.myPo.AddISOAlpha2("kr");
+            RefreshDataGridMyPo();
         }
     }
 }
