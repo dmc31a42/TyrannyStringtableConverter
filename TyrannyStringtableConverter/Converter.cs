@@ -46,7 +46,8 @@ namespace TyrannyStringtableConverter
             textFilesFolder = new TextFilesFolder(dirPath, extension, ISOAlpha2);
             foreach(KeyValuePair<string,string> keyValuePair in textFilesFolder)
             {
-                myPo[keyValuePair.Key,ISOAlpha2] = unityNewLine(keyValuePair.Value);
+                string globalizedKey = keyValuePair.Key.Replace("\\" + ISOAlpha2 + "\\", "\\ISOAlpha2\\");
+                myPo[globalizedKey, ISOAlpha2] = unityNewLine(keyValuePair.Value);
             }
             myPo.AddISOAlpha2(ISOAlpha2);
         }
@@ -168,11 +169,12 @@ namespace TyrannyStringtableConverter
         {
             foreach(string key in textFilesFolder.Keys.ToList())
             {
-                if(myPo.ContainsKey(key))
+                string globalizedKey = key.Replace("\\" + textFilesFolder.ISOAlpha2 + "\\", "\\ISOAlpha2\\");
+                if(myPo.ContainsKey(globalizedKey))
                 {
-                    if(String.IsNullOrEmpty(myPo[key,translatedISOAlpha2]))
+                    if(String.IsNullOrEmpty(myPo[globalizedKey, translatedISOAlpha2]))
                     {
-                        textFilesFolder[key] = myPo[key,translatedISOAlpha2];
+                        textFilesFolder[key] = myPo[globalizedKey, translatedISOAlpha2];
                     }
                 }
             }
