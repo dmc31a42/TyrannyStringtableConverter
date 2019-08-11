@@ -310,15 +310,15 @@ namespace TyrannyStringtableConverter
                 MessageBox.Show("선택한 파일이 실제로 존재하지 않습니다.");
                 return;
             }
-            if (cbPOLoadTranslatedISOAlpha2.SelectedItem == null
-                || cbPOLoadTranslatedISOAlpha2.SelectedItem.ToString().Length != 2)
+            if (cbPOLoadTranslatedISOAlpha2.Text == null
+                || cbPOLoadTranslatedISOAlpha2.Text.Length != 2)
             {
                 MessageBox.Show("Po 파일에서 불러올 번역문의 언어를 선택하거나 2자리로 정확히 입력하여주십시오.");
                 return;
             }
             StartWorkUI("Po 파일을 불러오고 있습니다.");
             string poLoadPath = tbPoLoadPath.Text;
-            string poLoadTranslatedISOAlpha2 = cbPOLoadTranslatedISOAlpha2.SelectedItem.ToString();
+            string poLoadTranslatedISOAlpha2 = cbPOLoadTranslatedISOAlpha2.Text;
             Thread thread = new Thread(new ThreadStart(
                 delegate ()
                 {

@@ -156,6 +156,7 @@ namespace TyrannyStringtableConverter
                             myPo[poEntry.ContextId, targetISOAlpha2] = catalog.GetTranslation(poEntry);
                         }
                     }
+                    myPo.AddISOAlpha2(targetISOAlpha2);
                 } else
                 {
                     var diagnostics = result.Diagnostics;
