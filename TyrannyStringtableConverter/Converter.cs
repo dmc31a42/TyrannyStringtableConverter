@@ -172,7 +172,7 @@ namespace TyrannyStringtableConverter
                 string globalizedKey = key.Replace("\\" + textFilesFolder.ISOAlpha2 + "\\", "\\ISOAlpha2\\");
                 if(myPo.ContainsKey(globalizedKey))
                 {
-                    if(String.IsNullOrEmpty(myPo[globalizedKey, translatedISOAlpha2]))
+                    if(String.IsNullOrEmpty(myPo[globalizedKey, translatedISOAlpha2]) == false)
                     {
                         textFilesFolder[key] = myPo[globalizedKey, translatedISOAlpha2];
                     }
