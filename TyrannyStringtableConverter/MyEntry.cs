@@ -187,7 +187,16 @@ namespace TyrannyStringtableConverter
 
         public object this[string ISOAlpha2]
         {
-            get { return Dictionary[ISOAlpha2]; }
+            get {
+                if(Dictionary.ContainsKey(ISOAlpha2))
+                {
+                    return Dictionary[ISOAlpha2];
+                }
+                else
+                {
+                    return "";
+                }
+            }
             set { Dictionary[ISOAlpha2] = value; }
         }
     }
