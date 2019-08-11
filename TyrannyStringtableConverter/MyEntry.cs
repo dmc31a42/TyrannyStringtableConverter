@@ -141,7 +141,15 @@ namespace TyrannyStringtableConverter
             // If the property name is found in a dictionary,
             // set the result parameter to the property value and return true.
             // Otherwise, return false.
-            return Dictionary.TryGetValue(name, out result);
+            if(Dictionary.ContainsKey(name))
+            {
+                result = Dictionary[name];
+            } else
+            {
+                result = "";
+            }
+            return true;
+            //return Dictionary.TryGetValue(name, out result);
         }
 
         // If you try to set a value of a property that is

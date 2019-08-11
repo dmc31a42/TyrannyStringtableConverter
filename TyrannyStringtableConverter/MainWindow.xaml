@@ -69,7 +69,7 @@
                         <Button Content="폴더 읽기" Click="Button_Click_1"/>
                     </Grid>
                     <Grid Margin="0,5,5,0">
-                        <Button Content="모든 폴더 읽기" Click="Button_Click_1"/>
+                        <Button Content="모든 폴더 읽기" Click="Button_Click_8"/>
                     </Grid>
                 </StackPanel>
             </GroupBox>
